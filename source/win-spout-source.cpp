@@ -5,6 +5,11 @@
  *
  * Many thanks to authors of https://github.com/baffler/OBS-OpenVR-Input-Plugin which
  * was used as guidance to working with the OBS Studio APIs
+ *
+ * Modifications by juacar01, 2026:
+ * - Persist selected Spout sender when offline.
+ * - Make sender list combo editable (OBS_COMBO_TYPE_EDITABLE).
+ * - Add manual sender refresh button.
  */
 
 #include <obs-module.h>

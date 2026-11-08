@@ -1,135 +1,112 @@
-Spout2 Plugin for OBS Studio (64bit)
-=========
+# Spout2 Plugin for OBS Studio (Fork / Mod)
 
-This plugin enables the import and export of shared textures at high resolution to and from [SPOUT2](https://github.com/leadedge/Spout2) compatible
-programs.
+> **Aviso de Atribución y Licencia / Attribution & License Notice:**  
+> Este proyecto es una bifurcación (fork) del plugin [obs-spout2-plugin](https://github.com/off-world-live/obs-spout2-plugin) desarrollado originalmente por **Campbell Morgan** y **Off World Live Ltd (https://offworld.live)**.  
+> Este software se redistribuye y modifica de acuerdo con los términos de la **GNU General Public License versión 2 (GPLv2)**.  
+> *Este proyecto es un fork independiente y no está afiliado, patrocinado ni respaldado por Off World Live Ltd ni por el proyecto OBS Studio.*
 
-## Why
+---
 
-Previously the only way to import shared textures from SPOUT was via the DirectShow `SpoutCam` interface or by screen-capturing
-the full-screen output of the `SpoutReceiver` program.
+## 🚀 Mejoras y Modificaciones de este Fork
 
-The `SpoutCam` is limited to standard webcam resolutions and capped at `1920x1080` and capturing the SpoutReceiver is both
-inefficient and limited by your current screen resolution.
+Este fork aborda limitaciones específicas en la persistencia de fuentes y el soporte para instalaciones portátiles de OBS Studio:
 
-Previously, there was no way of outputting Spout video textures from OBS. 
+1. **Persistencia de la fuente Spout seleccionada:**
+   - **Problema en la versión base:** Si la fuente Spout configurada no estaba transmitiendo al iniciar OBS o al abrir las propiedades, la lista no la mostraba y OBS revertía automáticamente la selección a *"Usar la primera fuente disponible"*, sobrescribiendo la configuración.
+   - **Solución:** La fuente seleccionada **se mantiene y persiste en la lista** independientemente de si el emisor está encendido o apagado en ese momento. Al encender la fuente emisora, OBS se conectará a ella de inmediato.
 
-This plugin implements the SPOUT2 SDK, creates an OBS Source from the SPOUT shared texture and a Spout output which sends the content of the OBS canvas to Spout.
+2. **Entrada de texto editable (`OBS_COMBO_TYPE_EDITABLE`):**
+   - El selector de fuentes ahora permite escribir manualmente el nombre del emisor (por ejemplo, `CamAr Studio`) incluso antes de iniciarlo por primera vez.
 
-Please see installation and usage guide [here](http://docs.offworld.live/#/obs-spout-plugin/README?id=spout-plugin-for-obs-studio)
+3. **Botón *"Actualizar lista de fuentes"*:**
+   - Se añadió un botón en el cuadro de propiedades para consultar y refrescar los emisores Spout activos al vuelo, sin tener que cerrar y reabrir el diálogo de propiedades.
 
-## Acknowledgements
+4. **Compatibilidad con instalaciones portátiles (OBS 33+):**
+   - Estructuración limpia y autocontenida que no depende del Registro de Windows (`HKLM\SOFTWARE\OBS Studio`) ni de rutas fijas en `C:\ProgramData`.
 
-Thanks to the developer of [OBS-OpenVR-Input-Plugin](https://github.com/baffler/OBS-OpenVR-Input-Plugin) whose source
-helped greatly in getting my head around the OBS API.
+---
 
-Thanks to the OBS team and their discord channel
+## 📋 Requisitos del Sistema
 
-Thanks to the authors of [SPOUT](https://github.com/leadedge/Spout2) for the library and clear documentation
+- **Sistema Operativo:** Windows 10 u 11 (64-bit).
+- **OBS Studio:** Versión 33.0 o superior (64-bit).
+- **Renderizador de OBS:** Direct3D 11 (renderizador predeterminado de OBS).
 
-## Requirements
+---
 
-- Windows 10/11, 64-bit, OBS Studio running on its default **Direct3D 11** renderer. On the OpenGL renderer (`--allow-opengl`) only the Spout Output from the Tools menu works; the Spout2 Capture source and the Spout Filter share textures with OBS's Direct3D 11 device and are not available.
-- **A matching OBS Studio version.** Each release is built against a specific OBS version and OBS refuses to load plugins
-  that were built for a newer OBS than the one running. The release page states the minimum OBS version for each download
-  (for example *"requires OBS Studio 33.0 or newer"*). If you are on an older OBS, update OBS or pick an older plugin release.
-- There are no plans for 32-bit builds.
+## 📦 Instalación
 
-## Installation
+### Instalación en OBS portátil o en carpeta personalizada (ej. `D:\Obs-Studio`)
 
-Every release ships three downloads. Pick the one that matches how your OBS is installed. This version requires
-OBS Studio 33.0 or newer and uses the plugin layout introduced in OBS 33, so it is not flagged as **Legacy** in the plugin
-manager.
+Para OBS Studio 33 o superior en versión descomprimida / portátil, copia los archivos en la subcarpeta `plugins\win-spout\` de tu OBS:
 
-### 1. Installer (`OBS_Spout2_Plugin_Install_v<version>.exe`) — normal OBS installs
-
-- Close OBS.
-- Download and run the installer (accept the "unknown publisher" prompt).
-- Keep the default destination. The plugin is installed into OBS's shared plugin folder, which every OBS installed on the
-  machine picks up automatically:
-  ```
-  C:\ProgramData\obs-studio\plugins\win-spout\
-  ├── win-spout.dll  (+ Spout.dll, SpoutDX.dll, SpoutLibrary.dll)
-  └── data\locale\en-US.ini  (…)
-  ```
-- The installer checks the version of the OBS Studio it finds in the registry and refuses to install if OBS is too old
-  for this build.
-- The installer removes files left by older versions in `plugins\win-spout\bin\64bit` and
-  `C:\Program Files\obs-studio\obs-plugins\64bit`. If you installed manually from a zip, delete those old copies yourself.
-
-### 2. Zip (`win-spout-<version>-windows-x64.zip`) — the same layout, done by hand
-
-Extract the archive so that you end up with exactly the folder tree shown above under `C:\ProgramData\obs-studio\plugins\`.
-(Create the `plugins` folder if it does not exist yet.)
-
-### 3. Portable zip (`win-spout-<version>-windows-x64-portable.zip`) — portable OBS
-
-OBS in portable mode (a `portable_mode.txt` file in the OBS folder) does **not** read `C:\ProgramData`, so use this archive
-instead. Extract it straight onto your OBS folder so that you end up with:
-```
-<your OBS folder>\
+```text
+<carpeta-de-tu-OBS>\
 └── plugins\win-spout\
-    ├── win-spout.dll  (+ Spout.dll, SpoutDX.dll, SpoutLibrary.dll)
-    └── data\locale\en-US.ini  (…)
+    ├── win-spout.dll
+    ├── Spout.dll
+    ├── SpoutDX.dll
+    ├── SpoutLibrary.dll
+    └── data\
+        └── locale\
+            ├── es-ES.ini
+            ├── en-US.ini
+            ├── pt-BR.ini
+            └── zh-CN.ini
 ```
 
-Alternatively, run the installer and choose `<your OBS folder>\plugins\win-spout` as the destination.
+> **Nota:** En OBS 33, las DLLs deben ubicarse directamente en `plugins\win-spout\` (no dentro de `bin\64bit\`), lo que permite que OBS cargue el plugin y sus textos localizados de forma relativa sin generar advertencias de módulos antiguos.
 
-### Troubleshooting
+---
 
-- **"The following OBS plugins failed to load: win-spout — Please update or remove these plugins."**
-  OBS is older than the version this plugin build was made for. Open `Help → Log Files → View Current Log` and look for a line
-  like `Module 'win-spout.dll' compiled with newer libobs 32.1`. Update OBS, or install the plugin release that matches your
-  OBS version.
-- **"Spout2 Capture" is missing from the Sources list, but the plugin loaded.** Another plugin is registering the same source id
-  (`spout_capture`); the OBS log shows `obs_register_source: Source 'spout_capture' already exists!`. Remove the other plugin
-  (PRPR Live's `prpr-library.dll` is a known case).
-- **Menu entries show up as `toolslabel` / `sourcename`.** The `data\locale` folder was not extracted next to the plugin;
-  compare your folder tree with the ones above.
-- **The source lists the sender but the preview is black**, and the log says `gs_texture_open_shared (D3D11): Failed to open
-  shared 2D texture (80070057)`: the sending application is running on a different GPU than OBS (typical on laptops with an
-  integrated + dedicated GPU). In Windows *Settings → System → Display → Graphics*, set both OBS and the sender application to
-  the same GPU.
-- **Where do the Spout Output settings live?** `Tools → Spout Output Settings`. The AutoStart and sender-name values are stored
-  in your OBS user config (`%APPDATA%\obs-studio\user.ini`, section `[win_spout]`) and survive reinstalling OBS or the plugin.
+## 🛠️ Compilación desde el Código Fuente
 
-## Contributing / Building
+Requisitos para compilar:
+- Visual Studio 2022 o 2026 con soporte para C++ de 64 bits.
+- CMake 3.28 o superior.
+- Git (con submódulos clonados: `git submodule update --init --recursive`).
 
-- Clone this repo recursively
+Comandos para configurar y compilar:
+```powershell
+# Configurar el proyecto (descarga dependencias de OBS y Qt automáticamente)
+cmake -B build_x64 -A x64 -DENABLE_FRONTEND_API=ON -DENABLE_QT=ON
+
+# Compilar en modo Release
+cmake --build build_x64 --config Release
+
+# Empaquetar en carpeta de distribución
+cmake --install build_x64 --prefix dist --config Release
+Copy-Item "deps/Spout2/BUILD/Binaries/x64/*.dll" "dist/win-spout"
 ```
-git clone --recursive git@github.com:off-world-live/obs-spout2-plugin
+
+---
+
+## 👥 Créditos y Agradecimientos
+
+- **Autor original del plugin:** Campbell Morgan / [Off World Live Ltd](https://offworld.live).
+- **Repositorio original de referencia:** [off-world-live/obs-spout2-plugin](https://github.com/off-world-live/obs-spout2-plugin).
+- Desarrolladores de [SPOUT2](https://github.com/leadedge/Spout2) (Lynn Jarvis / leadedge) por el SDK y la arquitectura Spout.
+- Al equipo y comunidad de [OBS Studio](https://obsproject.com/).
+- Autores y contribuidores de [OBS-OpenVR-Input-Plugin](https://github.com/baffler/OBS-OpenVR-Input-Plugin).
+- Contribuidores del proyecto base: [@shugen002](https://github.com/shugen002), [@mzlt](https://github.com/mzlt), [@terids](https://github.com/terids).
+
+---
+
+## 📄 Licencia y Descargo de Responsabilidad / License & Disclaimer
+
+Este programa es software libre; puedes redistribuirlo y/o modificarlo bajo los términos de la **GNU General Public License versión 2 (GPLv2)** publicada por la Free Software Foundation. Consulta el archivo [LICENSE](./LICENSE) para más detalles.
+
+```text
+Copyright (C) 2019-2021 Off World Live Ltd
+Copyright (C) 2026 Modificaciones y mejoras por juacar01
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 ```
-- Install [CMAKE min version 3.28](https://cmake.org/download/)
-- Either configure and generate through the CMAKE Gui or through the command line for the `windows-x64` architecture
-- Run `Configure`, `Generate` and then `Open Project` in the `CMake Gui`
-
-### Building a release locally
-
-- Open `git bash` or similar bash terminal interpreter
-- Run `./scripts/Release.sh <version number>`
-- You should find the executable (installer) and zip file in the main `win-spout` directory
-### Building the windows installer
-
-- Download the latest version of [NSIS here](https://nsis.sourceforge.io/Download);
-- Set the the `APPVERSION` variable in `win-spout-installer.nsi`
-- Compile [win-spout-installer.nsi](./win-spout-installer.nsi)
-
-Pull Requests welcome!
-
-## Contributors
-
-Thanks to everybody that submitted bug tickets and in particular the code contributors:
-
-- [@shugen002](https://github.com/shugen002)
-- [@mzlt](https://github.com/mzlt)
-- [@terids](https://github.com/terids)
-
-## Roadmap
-
-- [x] Improve CMakeLists.txt to copy `Spout.dll` automatically (thanks to [@shugen002](https://github.com/shugen002))
-- [x] Spout Output
-- [x] Spout Filter Output
-
-## License
-
-This plugin authored by Campbell Morgan is Copyright Off World Live Ltd, 2019-2021 and [licenced under the GPL V.2](./LICENCE).
