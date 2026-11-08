@@ -256,7 +256,7 @@ static void win_spout_source_receive(spout_source *context)
 		}
 		context->lastCheckTick = now;
 
-		if (receiver->GetSenderCount() == 0) {
+		if (context->useFirstSender && receiver->GetSenderCount() == 0) {
 			win_spout_source_disconnect(context);
 			win_spout_source_log_once(context, -3, LOG_INFO, "No active Spout senders");
 			return;
