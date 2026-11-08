@@ -228,7 +228,18 @@ static void win_spout_source_receive(spout_source *context)
 		os_atomic_set_bool(&context->pending_reconnect, false);
 		win_spout_source_disconnect(context);
 		// An empty name makes spoutDX follow the active sender ("first available").
-		receiver->SetReceiverName(context->useFirstSender ? nullptr : context->senderName);
+		if (context->useFirstSender) {
+			if (context->receiver) {
+				context->receiver->CloseDirectX11();
+				delete context->receiver;
+			}
+			context->receiver = new spoutDX;
+			context->dx_initialised = false;
+			receiver = context->receiver;
+			receiver->SetReceiverName(nullptr);
+		} else {
+			receiver->SetReceiverName(context->senderName);
+		}
 		context->lastCheckTick = 0;
 	}
 
@@ -294,8 +305,9 @@ static void win_spout_source_update(void *data, obs_data_t *settings)
 
 	auto selectedSender = obs_data_get_string(settings, SPOUT_SENDER_LIST);
 
-	if (strcmp(selectedSender, USE_FIRST_AVAILABLE_SENDER) == 0) {
+	if (!selectedSender || strlen(selectedSender) == 0 || strcmp(selectedSender, USE_FIRST_AVAILABLE_SENDER) == 0) {
 		context->useFirstSender = true;
+		context->senderName[0] = '\0';
 	} else {
 		context->useFirstSender = false;
 		memset(context->senderName, 0, sizeof(context->senderName));
@@ -487,25 +499,44 @@ static void win_spout_source_tick(void *data, float seconds)
 	obs_leave_graphics();
 }
 
-static void fill_senders(spoutDX *receiver, obs_property_t *list)
+static void fill_senders(spout_source *context, obs_property_t *list)
 {
-	// clear the list first
 	obs_property_list_clear(list);
 
-	// first option in the list should be "Take whatever is available"
 	obs_property_list_add_string(list, obs_module_text("usefirstavailablesender"), USE_FIRST_AVAILABLE_SENDER);
-	int totalSenders = receiver->GetSenderCount();
-	if (totalSenders == 0) {
-		return;
-	}
-	int index;
-	char senderName[256];
-	// then get the name of each sender from SPOUT
-	for (index = 0; index < totalSenders; index++) {
-		if (receiver->GetSender(index, senderName, (int)sizeof(senderName))) {
-			obs_property_list_add_string(list, senderName, senderName);
+
+	const char *current_sender = (context && !context->useFirstSender && context->senderName[0] != '\0')
+					     ? context->senderName
+					     : nullptr;
+	bool current_sender_in_list = false;
+
+	if (context && context->receiver) {
+		int totalSenders = context->receiver->GetSenderCount();
+		char senderName[256];
+		for (int index = 0; index < totalSenders; index++) {
+			if (context->receiver->GetSender(index, senderName, (int)sizeof(senderName))) {
+				if (current_sender && strcmp(senderName, current_sender) == 0) {
+					current_sender_in_list = true;
+				}
+				obs_property_list_add_string(list, senderName, senderName);
+			}
 		}
 	}
+
+	// Always retain the user's chosen sender in the list even if it is currently offline,
+	// so OBS UI preserves the selection instead of defaulting back to "use first available".
+	if (current_sender && !current_sender_in_list) {
+		obs_property_list_add_string(list, current_sender, current_sender);
+	}
+}
+
+static bool refresh_senders_clicked(obs_properties_t *props, obs_property_t *property, void *data)
+{
+	UNUSED_PARAMETER(property);
+	struct spout_source *context = (spout_source *)data;
+	obs_property_t *sender_list = obs_properties_get(props, SPOUT_SENDER_LIST);
+	fill_senders(context, sender_list);
+	return true;
 }
 
 // initialise the gui fields
@@ -516,9 +547,12 @@ static obs_properties_t *win_spout_properties(void *data)
 	obs_properties_t *props = obs_properties_create();
 
 	obs_property_t *sender_list = obs_properties_add_list(props, SPOUT_SENDER_LIST, obs_module_text("spoutsenders"),
-							      OBS_COMBO_TYPE_LIST, OBS_COMBO_FORMAT_STRING);
+							      OBS_COMBO_TYPE_EDITABLE, OBS_COMBO_FORMAT_STRING);
 
-	fill_senders(context->receiver, sender_list);
+	fill_senders(context, sender_list);
+
+	obs_properties_add_button2(props, "refresh_senders", obs_module_text("refreshsenders"),
+				   refresh_senders_clicked, context);
 
 	obs_property_t *composite_mode_list = obs_properties_add_list(props, SPOUT_COMPOSITE_MODE,
 								      obs_module_text("compositemode"),
@@ -561,3 +595,5 @@ struct obs_source_info create_spout_source_info()
 
 	return spout_source_info;
 }
+
+
