@@ -23,7 +23,7 @@ jobs:
     uses: ./.github/workflows/build-project.yaml
     secrets: inherit
     with:
-      sign: ${{ github.ref_type == 'tag' }}
+      sign: ${{ github.repository == 'off-world-live/obs-spout2-plugin' && github.ref_type == 'tag' }}
     permissions:
       contents: read
 
@@ -31,7 +31,7 @@ jobs:
   # maintainer approves the deployment to the `release` environment.
   sign-windows:
     name: Sign Windows Binaries 🔏
-    if: github.ref_type == 'tag'
+    if: github.repository == 'off-world-live/obs-spout2-plugin' && github.ref_type == 'tag'
     runs-on: [self-hosted, signer]
     needs: build-project
     environment: release
@@ -135,7 +135,7 @@ jobs:
     name: Create Release 🛫
     if: github.ref_type == 'tag'
     runs-on: ubuntu-24.04
-    needs: [build-project, sign-windows]
+    needs: build-project
     defaults:
       run:
         shell: bash
@@ -243,3 +243,4 @@ jobs:
             ${{ github.workspace }}/*.deb
             ${{ github.workspace }}/*.ddeb
             ${{ github.workspace }}/*.tar.xz
+

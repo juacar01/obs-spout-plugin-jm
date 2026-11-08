@@ -1,45 +1,45 @@
 {
-    "dependencies": {
-        "obs-studio": {
-            "version": "33.0.0",
-            "baseUrl": "https://github.com/obsproject/obs-studio/archive/refs/tags",
-            "label": "OBS sources",
-            "hashes": {
-                "macos": "",
-                "windows-x64": "bdab14146289f39be6c12d5165812ba5b37b5231f857cb84aa5e4bafeaaa8686"
-            }
-        },
-        "prebuilt": {
-            "version": "2026-10-23",
-            "baseUrl": "https://github.com/obsproject/obs-deps/releases/download",
-            "label": "Pre-Built obs-deps",
-            "hashes": {
-                "macos": "",
-                "windows-x64": "7508972a867a0ef68c26cd8bdba61fd999edd0a92fa9eb9585774de9bf51bfbe"
-            }
-        },
-        "qt6": {
-            "version": "2026-10-23",
-            "baseUrl": "https://github.com/obsproject/obs-deps/releases/download",
-            "label": "Pre-Built Qt6",
-            "hashes": {
-                "macos": "b216560cea8497207f9fc350c713716fb84aec6b973bb0ff8ac6add7734abad5",
-                "windows-x64": "78cd7a138464bb6edcdd3b85fcd63a5a7c69e369629963f3bc395bab74fb3f47"
-            },
-            "debugSymbols": {
-                "windows-x64": "5c97809dcb663a51e5b5f47983359d03a213a8c711c4b158a1b62429b8dff6be"
-            }
-        }
+  "dependencies": {
+    "obs-studio": {
+      "version": "33.0.0",
+      "baseUrl": "https://github.com/obsproject/obs-studio/archive/refs/tags",
+      "label": "OBS sources",
+      "hashes": {
+        "macos": "",
+        "windows-x64": "bdab14146289f39be6c12d5165812ba5b37b5231f857cb84aa5e4bafeaaa8686"
+      }
     },
-    "platformConfig": {
-        "macos": {
-            "bundleId": "com.example.plugintemplate-for-obs"
-        }
+    "prebuilt": {
+      "version": "2026-10-23",
+      "baseUrl": "https://github.com/obsproject/obs-deps/releases/download",
+      "label": "Pre-Built obs-deps",
+      "hashes": {
+        "macos": "",
+        "windows-x64": "7508972a867a0ef68c26cd8bdba61fd999edd0a92fa9eb9585774de9bf51bfbe"
+      }
     },
-    "name": "win-spout",
-    "displayName": "Spout2 Plugin for OBS",
-    "version": "1.11.0",
-    "author": "Campbell Morgan",
-    "website": "https://github.com/Off-World-Live/obs-spout2-plugin",
-    "email": "support@offworld.live"
+    "qt6": {
+      "version": "2026-10-23",
+      "baseUrl": "https://github.com/obsproject/obs-deps/releases/download",
+      "label": "Pre-Built Qt6",
+      "hashes": {
+        "macos": "b216560cea8497207f9fc350c713716fb84aec6b973bb0ff8ac6add7734abad5",
+        "windows-x64": "78cd7a138464bb6edcdd3b85fcd63a5a7c69e369629963f3bc395bab74fb3f47"
+      },
+      "debugSymbols": {
+        "windows-x64": "5c97809dcb663a51e5b5f47983359d03a213a8c711c4b158a1b62429b8dff6be"
+      }
+    }
+  },
+  "platformConfig": {
+    "macos": {
+      "bundleId": "com.example.plugintemplate-for-obs"
+    }
+  },
+  "name": "win-spout",
+  "displayName": "Spout2 Plugin for OBS",
+  "version": "1.15.1",
+  "author": "Campbell Morgan",
+  "website": "https://github.com/juacar01/obs-spout-plugin-jm",
+  "email": "support@offworld.live"
 }
