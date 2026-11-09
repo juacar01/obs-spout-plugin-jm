@@ -38,7 +38,7 @@
   },
   "name": "win-spout",
   "displayName": "Spout2 Plugin for OBS",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Campbell Morgan",
   "website": "https://github.com/juacar01/obs-spout-plugin-jm",
   "email": "support@offworld.live"
